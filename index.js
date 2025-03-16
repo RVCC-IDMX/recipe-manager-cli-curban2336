@@ -255,8 +255,7 @@ yargs(hideBin(process.argv))
     // 1. maxTime - Maximum cooking time in minutes
     // 2. callback function that receives the filtered recipes and the time limit
 
-    getQuickRecipesList(argv.time, function (quickRecipes, maxTime) {
-      quickRecipes = getQuickRecipes(maxTime);
+    getQuickRecipesList(argv.time, function (quickRecipes) {
       displayRecipeList(quickRecipes);
     });
   })
