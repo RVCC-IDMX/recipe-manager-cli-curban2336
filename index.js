@@ -39,6 +39,7 @@ import {
 } from './src/cli/command-wrapper.js';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
+import { getQuickRecipes } from './src/recipe-collection.js';
 
 // CHALLENGE 6: Complete the yargs commands
 // The commands are already set up, you just need to fill in some of the handlers
@@ -47,7 +48,7 @@ yargs(hideBin(process.argv))
   // List all recipes
   .command('list', 'List all recipes', () => {
     // This handler is already implemented for you
-    getRecipes(function(recipes) {
+    getRecipes(function (recipes) {
       displayRecipeList(recipes);
     });
   })
@@ -60,7 +61,7 @@ yargs(hideBin(process.argv))
     });
   }, (argv) => {
     // This handler is already implemented for you
-    getRecipeById(argv.id, function(recipe) {
+    getRecipeById(argv.id, function (recipe) {
       if (recipe) {
         displayRecipeDetails(recipe);
       }
@@ -75,7 +76,7 @@ yargs(hideBin(process.argv))
     });
   }, (argv) => {
     // This handler is already implemented for you
-    getRecipeById(argv.id, function(recipe) {
+    getRecipeById(argv.id, function (recipe) {
       if (recipe) {
         displayFormattedRecipe(recipe, formatRecipe);
       }
@@ -87,19 +88,17 @@ yargs(hideBin(process.argv))
     // CHALLENGE 7: Implement recipe creation logic
 
     // 1. Use promptForRecipeInfo to get recipe information
-    promptForRecipeInfo().then(function(recipeInfo) {
+    promptForRecipeInfo().then(function (recipeInfo) {
       // This callback will run after the user enters recipe info
 
       // 2. Create a new recipe using the imported createRecipe function
       // Hint: createRecipe accepts name, cookingTime, and servings parameters
 
-      // Your code here
+      let newRecipe = createRecipe(recipeInfo.name, recipeInfo.cookingTime, recipeInfo.servings);
 
       // 3. Save the recipe using the createNewRecipe helper function
       // Sample code:
-      // createNewRecipe(newRecipe);
-
-      // Your code here
+      createNewRecipe(newRecipe);
     });
   })
 
@@ -113,7 +112,7 @@ yargs(hideBin(process.argv))
     // CHALLENGE 8: Implement add ingredient logic
 
     // 1. Get the recipe by ID
-    getRecipeById(argv.id, function(recipe) {
+    getRecipeById(argv.id, function (recipe) {
       // This callback runs when we have the recipe
 
       if (!recipe) {
@@ -122,13 +121,13 @@ yargs(hideBin(process.argv))
       }
 
       // 2. Use promptForIngredient to get ingredient information
-      promptForIngredient().then(function(ingredientInfo) {
+      promptForIngredient().then(function (ingredientInfo) {
         // This callback runs after the user enters ingredient info
 
         // 3. Add the ingredient to the recipe using the addIngredient function
         // Hint: addIngredient accepts recipe, name, amount, and unit parameters
 
-        // Your code here
+        addIngredient(recipe, ingredientInfo.name, ingredientInfo.amount, ingredientInfo.unit);
 
         // 4. Update the recipe in storage
         // Notice we create a success message first
@@ -146,12 +145,12 @@ yargs(hideBin(process.argv))
     });
   }, (argv) => {
     // This handler is already implemented for you
-    getRecipeById(argv.id, function(recipe) {
+    getRecipeById(argv.id, function (recipe) {
       if (!recipe) {
         return;
       }
 
-      promptForStep().then(function(instruction) {
+      promptForStep().then(function (instruction) {
         addStep(recipe, instruction);
 
         const successMessage = `Added step ${recipe.steps.length} to "${recipe.name}"`;
@@ -173,7 +172,7 @@ yargs(hideBin(process.argv))
       });
   }, (argv) => {
     // This handler is already implemented for you
-    getRecipeById(argv.id, function(recipe) {
+    getRecipeById(argv.id, function (recipe) {
       if (!recipe) {
         return;
       }
@@ -192,12 +191,12 @@ yargs(hideBin(process.argv))
       if (stepIndex === null) {
         // Display current steps
         console.log(chalk.cyan('Current steps:'));
-        recipe.steps.forEach(function(step, index) {
+        recipe.steps.forEach(function (step, index) {
           console.log(`${index + 1}. ${step}`);
         });
 
         // Prompt for step index
-        promptForStepIndex(recipe.steps.length - 1).then(function(index) {
+        promptForStepIndex(recipe.steps.length - 1).then(function (index) {
           removeStep(recipe, index);
 
           const successMessage = `Removed step ${index + 1} from "${recipe.name}"`;
@@ -226,12 +225,12 @@ yargs(hideBin(process.argv))
     });
   }, (argv) => {
     // This handler is already implemented for you
-    getRecipeById(argv.id, function(recipe) {
+    getRecipeById(argv.id, function (recipe) {
       if (!recipe) {
         return;
       }
 
-      promptForConfirmation(`Are you sure you want to delete "${recipe.name}"?`).then(function(confirmed) {
+      promptForConfirmation(`Are you sure you want to delete "${recipe.name}"?`).then(function (confirmed) {
         if (!confirmed) {
           displayInfo('Delete cancelled');
           return;
@@ -256,18 +255,16 @@ yargs(hideBin(process.argv))
     // 1. maxTime - Maximum cooking time in minutes
     // 2. callback function that receives the filtered recipes and the time limit
 
-    // Example:
-    // getQuickRecipesList(argv.time, function(quickRecipes, maxTime) {
-    //   // Your code here
-    // });
-
-    // Your code here
+    getQuickRecipesList(argv.time, function (quickRecipes, maxTime) {
+      quickRecipes = getQuickRecipes(maxTime);
+      displayRecipeList(quickRecipes);
+    });
   })
 
   // Reset recipe data to defaults
   .command('reset-data', 'Reset recipe data to defaults', () => {
     // This handler is already implemented for you
-    promptForConfirmation('Are you sure you want to reset all recipe data to defaults? This cannot be undone.').then(function(confirmed) {
+    promptForConfirmation('Are you sure you want to reset all recipe data to defaults? This cannot be undone.').then(function (confirmed) {
       if (!confirmed) {
         displayInfo('Reset cancelled');
         return;

@@ -122,5 +122,22 @@
       "Serve with maple syrup"
     ],
     "dateCreated": "3/16/2023"
+  },
+  {
+    "id": 1742086002196,
+    "name": "bouquet",
+    "cookingTime": 2,
+    "servings": 1,
+    "ingredients": [
+      {
+        "name": "flower",
+        "amount": 2,
+        "unit": "bushels"
+      }
+    ],
+    "steps": [
+      "add bushels to bouquet."
+    ],
+    "dateCreated": "3/15/2025"
   }
 ]
